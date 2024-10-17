@@ -28,6 +28,9 @@ public class MyHandler extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         String content = new String(ch, start, length).trim();
+        if(content.equals("")){
+            return;
+        }
         switch (currentElement) {
             case "Age":
                 age = Integer.parseInt(content);
@@ -77,17 +80,10 @@ public class MyHandler extends DefaultHandler {
             case "Order":
                 insertOrderIntoDatabase(orderId,orderLineId,orderLineTotal);
                 orderId = -1;
-                orderTotal = Integer.parseInt(null);
-                orderLineTotal = Double.parseDouble(null);
                 break;
             case "OrderLine":
                 insertOrderLineIntoDatabase(orderId,orderLineId,orderLinePrice,orderLineProductId,orderLineQty,orderLineTotal);
                 orderId = -1;
-                orderLineId = Integer.parseInt(null);
-                orderLinePrice = Double.parseDouble(null);
-                orderLineProductId = Integer.parseInt(null);
-                orderLineQty = Integer.parseInt(null);
-                orderLineTotal = Double.parseDouble(null);
                 break;
         }
     }
@@ -121,12 +117,12 @@ public class MyHandler extends DefaultHandler {
     private void insertOrderLineIntoDatabase(int orderId, int orderLineId, double orderLinePrice, int orderLineProductId, int orderLineQty, double orderLineTotal) {
         String sql = "INSERT INTO orderlines (OrderLinesID, OrderID, Qty, Price, LineTotal, ProductID) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, orderId);
-            pstmt.setInt(2, orderLineId);
-            pstmt.setDouble(3, orderLinePrice);
-            pstmt.setInt(4, orderLineProductId);
-            pstmt.setInt(5, orderLineQty);
-            pstmt.setDouble(6, orderLineTotal);
+            pstmt.setInt(1, orderLineId);
+            pstmt.setInt(2, orderId);
+            pstmt.setInt(3, orderLineQty);
+            pstmt.setDouble(4, orderLinePrice);
+            pstmt.setDouble(5, orderLineTotal);
+            pstmt.setInt(6, orderLineProductId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

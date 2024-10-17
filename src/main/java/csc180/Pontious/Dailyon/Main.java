@@ -10,7 +10,7 @@ public class Main {
         try{
             String url = "jdbc:mysql://localhost:3306/xmladventure"; // database link
             String user = "root";
-            String pass = "Test";
+            String pass = "test";
             Connection connection = DriverManager.getConnection(url,user,pass);
 
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -18,7 +18,7 @@ public class Main {
 
             MyHandler handler = new MyHandler(connection);
 
-            parser.parse("C:\\Users\\RWettstein\\Desktop\\PRO 335\\XMLAdventure\\customers\\customers.xml", handler);
+            parser.parse("C:\\Users\\tsoutherland\\Downloads\\customers\\customers.xml", handler);
 
             connection.close();
         }catch(Exception e){
