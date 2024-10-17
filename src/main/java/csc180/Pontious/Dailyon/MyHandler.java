@@ -7,6 +7,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class MyHandler extends DefaultHandler {
@@ -15,6 +16,8 @@ public class MyHandler extends DefaultHandler {
     private int customerId, age, orderId, orderTotal, orderLineId, orderLineQty, orderLineProductId;
     private double orderLinePrice, orderLineTotal;
     private Connection connection;
+
+    private ArrayList<OrderLine> ordersList = new ArrayList();
 
     public MyHandler(Connection connection) {
         this.connection = connection;
@@ -78,12 +81,19 @@ public class MyHandler extends DefaultHandler {
                 insertCustomerIntoDatabase(customerId,name,email,age);
                 break;
             case "Order":
+                for (int i = 0; i < ordersList.size(); i++) {
+                    ordersList.get(i).setOrderID(orderId);
+                    insertOrderLineIntoDatabase(ordersList.get(i).getOrderLinesID(), ordersList.get(i).getOrderID(), ordersList.get(i).getPrice(),
+                            ordersList.get(i).getProductID(), ordersList.get(i).getQty(), ordersList.get(i).getLineTotal());
+                }
+                ordersList.clear();
                 insertOrderIntoDatabase(orderId,orderLineId,orderLineTotal);
-                orderId = -1;
+                //orderId = -1;
                 break;
             case "OrderLine":
-                insertOrderLineIntoDatabase(orderId,orderLineId,orderLinePrice,orderLineProductId,orderLineQty,orderLineTotal);
-                orderId = -1;
+                ordersList.add(new OrderLine(orderLineId, -1, orderLineQty, orderLineProductId, orderLinePrice, orderLineTotal));
+                //insertOrderLineIntoDatabase(orderId,orderLineId,orderLinePrice,orderLineProductId,orderLineQty,orderLineTotal);
+                //orderId = -1;
                 break;
         }
     }
@@ -114,7 +124,7 @@ public class MyHandler extends DefaultHandler {
 
     }
 
-    private void insertOrderLineIntoDatabase(int orderId, int orderLineId, double orderLinePrice, int orderLineProductId, int orderLineQty, double orderLineTotal) {
+    private void insertOrderLineIntoDatabase(int orderLineId, int orderId, double orderLinePrice, int orderLineProductId, int orderLineQty, double orderLineTotal) {
         String sql = "INSERT INTO orderlines (OrderLinesID, OrderID, Qty, Price, LineTotal, ProductID) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, orderLineId);
