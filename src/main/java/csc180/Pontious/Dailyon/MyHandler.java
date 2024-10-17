@@ -91,7 +91,7 @@ public class MyHandler extends DefaultHandler {
     }
 
     private void insertCustomerIntoDatabase(String customerId, String name, String email, String age) {
-        String sql = "INSERT INTO customers (customerId, name, email, age) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO customer (CustomerId, Name, Email, Age) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, customerId);
             pstmt.setString(2, name);
@@ -104,7 +104,7 @@ public class MyHandler extends DefaultHandler {
     }
 
     private void insertOrderIntoDatabase(String customerId, String orderId, String orderTotal) {
-        String sql = "INSERT INTO orders (customerId, orderId, total) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO orders (OrderID, CustomerID, Total) VALUES (?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, customerId);
             pstmt.setString(2, orderId);
@@ -117,7 +117,7 @@ public class MyHandler extends DefaultHandler {
     }
 
     private void insertOrderLineIntoDatabase(String orderId, String orderLineId, String orderLinePrice, String orderLineProductId, String orderLineQty, String orderLineTotal) {
-        String sql = "INSERT INTO orderlines (orderId, orderLineId, price, productId, qty, total) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO orderlines (OrderLinesID, OrderID, Qty, Price, LineTotal, ProductID) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, orderId);
             pstmt.setString(2, orderLineId);
