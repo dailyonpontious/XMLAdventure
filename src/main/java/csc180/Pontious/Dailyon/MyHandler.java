@@ -11,9 +11,9 @@ import java.util.Stack;
 
 public class MyHandler extends DefaultHandler {
     private String currentElement;
-    private String age, customerId, email, name;
-    private String orderId, orderTotal;
-    private String orderLineId, orderLinePrice, orderLineProductId, orderLineQty, orderLineTotal;
+    private String  email, name;
+    private int customerId, age, orderId, orderTotal, orderLineId, orderLineQty, orderLineProductId;
+    private double orderLinePrice, orderLineTotal;
     private Connection connection;
 
     public MyHandler(Connection connection) {
@@ -30,10 +30,10 @@ public class MyHandler extends DefaultHandler {
         String content = new String(ch, start, length).trim();
         switch (currentElement) {
             case "Age":
-                age = content;
+                age = Integer.parseInt(content);
                 break;
             case "CustomerId":
-                customerId = content;
+                customerId =Integer.parseInt(content);
                 break;
             case "Email":
                 email = content;
@@ -42,26 +42,26 @@ public class MyHandler extends DefaultHandler {
                 name = content;
                 break;
             case "OrderId":
-                orderId = content;
+                orderId = Integer.parseInt(content);
                 break;
             case "Total":
-                if (orderId != null){
-                    orderTotal = content;
+                if (orderId == -1){
+                    orderTotal = Integer.parseInt(content);
                 }else{
-                    orderLineTotal = content;
+                    orderLineTotal = Double.parseDouble(content);
                 }
                 break;
             case "OrderLineId":
-                orderLineId = content;
+                orderLineId = Integer.parseInt(content);
                 break;
             case "Price":
-                orderLinePrice = content;
+                orderLinePrice = Double.parseDouble(content);
                 break;
             case "ProductId":
-                orderLineProductId = content;
+                orderLineProductId = Integer.parseInt(content);
                 break;
             case "Qty":
-                orderLineQty = content;
+                orderLineQty = Integer.parseInt(content);
                 break;
 
 
@@ -76,39 +76,41 @@ public class MyHandler extends DefaultHandler {
                 break;
             case "Order":
                 insertOrderIntoDatabase(orderId,orderLineId,orderLineTotal);
-                orderTotal = null;
-                orderLineTotal = null;
+                orderId = -1;
+                orderTotal = Integer.parseInt(null);
+                orderLineTotal = Double.parseDouble(null);
                 break;
             case "OrderLine":
                 insertOrderLineIntoDatabase(orderId,orderLineId,orderLinePrice,orderLineProductId,orderLineQty,orderLineTotal);
-                orderLineId = null;
-                orderLinePrice = null;
-                orderLineProductId = null;
-                orderLineQty = null;
-                orderLineTotal = null;
+                orderId = -1;
+                orderLineId = Integer.parseInt(null);
+                orderLinePrice = Double.parseDouble(null);
+                orderLineProductId = Integer.parseInt(null);
+                orderLineQty = Integer.parseInt(null);
+                orderLineTotal = Double.parseDouble(null);
                 break;
         }
     }
 
-    private void insertCustomerIntoDatabase(String customerId, String name, String email, String age) {
+    private void insertCustomerIntoDatabase(int customerId, String name, String email, int age) {
         String sql = "INSERT INTO customer (CustomerId, Name, Email, Age) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, customerId);
+            pstmt.setInt(1, customerId);
             pstmt.setString(2, name);
             pstmt.setString(3, email);
-            pstmt.setString(4, age);
+            pstmt.setInt(4, age);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void insertOrderIntoDatabase(String customerId, String orderId, String orderTotal) {
+    private void insertOrderIntoDatabase(int customerId, int orderId, double orderTotal) {
         String sql = "INSERT INTO orders (OrderID, CustomerID, Total) VALUES (?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, customerId);
-            pstmt.setString(2, orderId);
-            pstmt.setString(3, orderTotal);
+            pstmt.setInt(1, customerId);
+            pstmt.setInt(2, orderId);
+            pstmt.setDouble(3, orderTotal);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -116,15 +118,15 @@ public class MyHandler extends DefaultHandler {
 
     }
 
-    private void insertOrderLineIntoDatabase(String orderId, String orderLineId, String orderLinePrice, String orderLineProductId, String orderLineQty, String orderLineTotal) {
+    private void insertOrderLineIntoDatabase(int orderId, int orderLineId, double orderLinePrice, int orderLineProductId, int orderLineQty, double orderLineTotal) {
         String sql = "INSERT INTO orderlines (OrderLinesID, OrderID, Qty, Price, LineTotal, ProductID) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, orderId);
-            pstmt.setString(2, orderLineId);
-            pstmt.setString(3, orderLinePrice);
-            pstmt.setString(4, orderLineProductId);
-            pstmt.setString(5, orderLineQty);
-            pstmt.setString(6, orderLineTotal);
+            pstmt.setInt(1, orderId);
+            pstmt.setInt(2, orderLineId);
+            pstmt.setDouble(3, orderLinePrice);
+            pstmt.setInt(4, orderLineProductId);
+            pstmt.setInt(5, orderLineQty);
+            pstmt.setDouble(6, orderLineTotal);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
