@@ -3,7 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 /customers
-aws.xml
+/aws.xml
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
